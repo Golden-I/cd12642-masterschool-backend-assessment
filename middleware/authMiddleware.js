@@ -1,35 +1,37 @@
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
+const mongoose = require("mongoose");
+mongoose.set("strictQuery", false);
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
 
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    !req.headers.authorization ||
+    !req.headers.authorization.startsWith("Bearer")
   ) {
-    try {
-      // Get token from header
-      token = req.headers.authorization.split(" ")[1];
-
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Get user from the token
-      req.user = await User.findById(decoded.id).select("-password");
-
-      next();
-    } catch (error) {
-      console.log(error);
-      res.status(401);
-      throw new Error("Not authorized");
-    }
+    return res.status(401).json({ message: "No token found" });
   }
 
-  if (!token) {
-    res.status(401);
-    throw new Error("Not authorized, no token");
+  try {
+    token = req.headers.authorization.split(" ")[1];
+
+    const decoded = await new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(decoded);
+      });
+    });
+
+    req.user = await User.findById(decoded.id).select("-password");
+
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: "Not authorized" });
   }
 });
 

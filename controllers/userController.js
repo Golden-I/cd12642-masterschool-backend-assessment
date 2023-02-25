@@ -36,21 +36,10 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     await newUser.save();
+
     res
       .status(201)
       .json({ message: "User created successfully", user: newUser });
-
-    if (user) {
-      res.status(201).json({
-        _id: user.id,
-        name: user.username,
-        email: user.email,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
-    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -95,7 +84,8 @@ const getMe = asyncHandler(async (req, res) => {
 
 // Generate JWT
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  console.log("jwt:", process.env.JWT_SECRET);
+  return jwt.sign({ id: id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 };

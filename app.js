@@ -7,6 +7,8 @@ const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 const port = process.env.port || 3000;
 
 connectDB();

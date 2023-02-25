@@ -5,3 +5,17 @@ exports.errorHandler = (err, req, res, next) => {
 
   res.status(statusCode).json({ errMessage, stack });
 };
+const errorHandler = (err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const errorMessage = err.message || "Internal Server Error";
+  const stackTrace = process.env.NODE_ENV === "development" ? err.stack : null;
+
+  res.status(statusCode).json({
+    message: errorMessage,
+    stack: stackTrace,
+  });
+};
+
+module.exports = {
+  errorHandler,
+};

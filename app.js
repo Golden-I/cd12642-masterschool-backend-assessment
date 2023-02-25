@@ -4,6 +4,7 @@ const dotenv = require("dotenv").config();
 const connectDB = require("./config/db");
 const favoriteRoutes = require("./routes/favoritesRoutes");
 const userRoutes = require("./routes/userRoutes");
+const { errorHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
 app.use(express.json());

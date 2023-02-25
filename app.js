@@ -2,6 +2,8 @@ const express = require("express");
 const photoRoutes = require("./routes/photoRoutes");
 const dotenv = require("dotenv").config();
 const connectDB = require("./config/db");
+const favoriteRoutes = require("./routes/favoritesRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 app.use(express.json());
@@ -14,7 +16,12 @@ app.get("/", (req, res) => {
 });
 
 //userRouter
-app.use("/api", photoRoutes);
+app.use("/api/photos", photoRoutes);
 
+//user
+app.use("/api/users", userRoutes);
+
+//favoriteRouter
+app.use("/api/favoritesRoutes", favoriteRoutes);
 //listen for requests
 app.listen(port, () => console.log(`Server is running on port ${port}`));
